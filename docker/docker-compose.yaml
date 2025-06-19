@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: eucomida-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: eucomida_db
+      MYSQL_USER: eucomida_user
+      MYSQL_PASSWORD: eucomida_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - eucomida-network
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  eucomida-api:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: eucomida-api
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - eucomida-network
+
+volumes:
+  mysql_data:
+
+networks:
+  eucomida-network:
+    driver: bridge
