@@ -32,6 +32,8 @@ services:
       - "8080:8080"
     networks:
       - eucomida-network
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}  
 
 volumes:
   mysql_data:
