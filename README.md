@@ -215,7 +215,7 @@ Para executar a aplicação e o banco de dados com um único comando:
 2. Execute:
 
 ```bash
-docker compose -f docker/docker-compose.yaml up --build
+SPRING_PROFILES_ACTIVE=dev docker compose -f docker/docker-compose.yaml up -d --build
 ```
 
 3. A aplicação estará disponível em: `http://localhost:8080`
