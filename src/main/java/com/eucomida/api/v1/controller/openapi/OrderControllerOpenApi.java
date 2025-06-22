@@ -17,16 +17,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface OrderControllerOpenApi {
     @Operation(summary = "Create a new order.")
     @ApiResponses({
-            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
-            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
+            @ApiResponse(responseCode = "400", description = "Bad request", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
+            @ApiResponse(responseCode = "403", description = "Access denied", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
     })
     OrderDto createOrder(@RequestBody @Valid OrderCreateDto orderCreateDto);
 
     @Operation(summary = "Get status from a specific order.")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class))}),
-            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
-            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
+            @ApiResponse(responseCode = "200", description = "Success", content = {@Content(schema = @Schema(implementation = String.class))}),
+            @ApiResponse(responseCode = "403", description = "Access denied", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
+            @ApiResponse(responseCode = "404", description = "Resource not found", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = {@Content(schema = @Schema(implementation = ProblemDetail.class))}),
     })
     String getOrderStatus(@PathVariable Long orderId);
 }

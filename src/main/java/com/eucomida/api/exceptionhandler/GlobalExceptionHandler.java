@@ -1,8 +1,10 @@
 package com.eucomida.api.exceptionhandler;
 
 import com.eucomida.domain.exception.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,6 +24,18 @@ public class GlobalExceptionHandler {
         problemDetail.setType(URI.create("/errors/internal-server-error"));
        problemDetail.setDetail(exception.getMessage());
        return problemDetail;
+    }
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ProblemDetail handleAuthorizationDeniedException(AuthorizationDeniedException exception,
+                                                            HttpServletRequest request) {
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+
+        problemDetail.setTitle("Access Denied");
+        problemDetail.setType(URI.create("/errors/access-denied"));
+        problemDetail.setDetail("User does not have access to the resource: " + request.getRequestURI());
+        
+        return problemDetail;
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

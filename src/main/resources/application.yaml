@@ -1,15 +1,18 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/eucomida_db?serverTimezone=UTC
+    url: jdbc:mysql://eucomida-mysql:3306/eucomida_db?serverTimezone=UTC
     username: eucomida_user
     password: eucomida_pass
   jpa:
     open-in-view: false
     show-sql: true
-  flyway:
-    locations: classpath:db/migration
   messages:
     basename: ValidationMessages
+  security:
+    oauth2:
+      resource-server:
+        jwt:
+          jwk-set-uri: http://localhost:8081/oauth2/jwks
 
 logging:
   level:
