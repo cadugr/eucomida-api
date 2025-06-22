@@ -53,9 +53,23 @@ V<versão>__<descrição>.sql
 
 Esse script será executado automaticamente ao iniciar a aplicação. O Flyway mantém um histórico das migrations já aplicadas, garantindo controle e integridade do schema do banco de dados em todos os ambientes.
 
-### 🐳 Provisionamento com Docker
+### 📦 Massa de dados para ambiente de desenvolvimento
 
-O banco de dados é provisionado automaticamente com o **Docker Compose**, tornando simples a inicialização de um ambiente de desenvolvimento local. O Flyway se encarrega de aplicar todas as migrations automaticamente após o banco estar disponível.
+Quando a aplicação é executada com o profile `dev`, uma massa de dados **para testes** é automaticamente carregada logo após a execução das migrations. Esses dados estão definidos no arquivo:
+
+```
+src/main/resources/db/testdata/afterMigrate.sql
+```
+
+Este script insere uma **massa de dados inicial para testes**, incluindo:
+
+- Usuário `joao`, com senha `123`, do tipo USER, com a permissão `CREATE_ORDER`
+- Usuária `maria`, com senha `123`, do tipo DELIVERY_MAN, com as permissões `CREATE_ORDER` e `CONSULT_ORDER_STATUS`
+- Cliente `frontend-web`, necessário para o fluxo de autenticação **Authorization Code com PKCE** a ser utilizado pela aplicação frontend.
+
+Esse script é ideal para facilitar testes locais e simulações de uso da aplicação em ambiente de desenvolvimento. Ele **não deve ser executado** em ambientes como staging ou produção.
+
+> 🔄 A execução com profile `dev` via Docker é explicada mais adiante neste documento, na seção **Execução com Docker Compose**.
 
 ---
 
@@ -66,6 +80,20 @@ A autenticação e autorização são realizadas com **OAuth2** utilizando **JWT
 Como as APIs REST serão consumidas por um frontend web (SPA) e por um aplicativo mobile, foi adotado o fluxo de **Authorization Code com PKCE**, por ser o mais seguro e recomendado para SPAs.
 
 Endpoints protegidos exigem um token válido no cabeçalho `Authorization: Bearer <token>`.
+
+### 👤 Usuários de Teste
+
+Dois usuários são automaticamente cadastrados na base de dados ao subir a aplicação com o Flyway:
+
+| Usuário | Senha | Tipo de usuário | Permissões atribuídas |
+|--------|--------|------------------|------------------------|
+| `joao` | `123`  | USER             | `CREATE_ORDER`         |
+| `maria`| `123`  | DELIVERY_MAN     | `CREATE_ORDER`, `CONSULT_ORDER_STATUS` |
+
+**Resumo:**
+
+- `joao` poderá **apenas criar pedidos**.
+- `maria` poderá **criar e consultar pedidos**.
 
 ### Passo a passo para obter um token válido:
 
@@ -142,7 +170,6 @@ Authorization: Bearer <token>
   - Spring Security com validações e restrições por escopo/permissão
   - Validação de entrada com `@Valid` e mensagens padronizadas
   - Tratamento global de exceções
-  - CORS configurado para controlar origens permitidas
 
 ---
 
@@ -219,6 +246,12 @@ SPRING_PROFILES_ACTIVE=dev docker compose -f docker/docker-compose.yaml up -d --
 ```
 
 3. A aplicação estará disponível em: `http://localhost:8080`
+
+Para parar os containers:
+
+```bash
+docker compose -f docker/docker-compose.yaml down
+```
 
 ---
 
