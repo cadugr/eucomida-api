@@ -212,7 +212,7 @@ curl --request GET \
 A documentação da API está disponível via Swagger UI:
 
 ```
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
 ```
 
 ---
